@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-# Variáveis Globais de Configuração
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "$SCRIPT_DIR/../.env"
+
 verificar_status() {
     echo "=========================================="
     echo " [Central] Status do Servidor: mega "
