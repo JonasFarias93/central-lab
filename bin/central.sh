@@ -23,9 +23,13 @@ verificar_status() {
         # Conecta via SSH, roda o comando 'idle', mostra CPU em uso
         CPU=$(ssh -q -p "$PORTA_MEGA" "${USER_MEGA}@${IP_MEGA}" "idle=\$(vmstat 1 1 | tail -1 | awk '{print \$15}'); echo \$((100 - idle))")
 
+        # Conecta via SSH, roda o comando 'ss', mostra quantidade de Conexoes Ativas
+        CONEXAO=$(ssh -q -p "$PORTA_MEGA" "${USER_MEGA}@${IP_MEGA}" "total=\$(ss -tn state established | wc -l); echo \$((total - 1))")
+
         echo "💾 Armazenamento (Root): $DISCO"
         echo "🧠 Memória RAM: $RAM"
         echo "⚙️ CPU em Uso: $CPU%"
+        echo "🛜 Conexões Ativas: $CONEXAO"
 
     else
         echo "🔴 Servidor: OFFLINE ou inacessível na porta $PORTA_MEGA!"
