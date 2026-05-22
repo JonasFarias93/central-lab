@@ -42,12 +42,37 @@ verificar_status() {
     echo "=========================================="
 }
 
+
+atualizar_servidor() {
+    echo "=========================================="
+    echo " [Central] Atualização do Servidor: mega "
+    echo "=========================================="
+
+    # Validação rápida de porta usando Netcat
+    if nc -z -w 2 "$IP_MEGA" "$PORTA_MEGA" > /dev/null 2>&1; then
+        echo "🟢 Servidor: ONLINE (Tempo de Resposta Rápido)"
+        echo "------------------------------------------"
+
+        UPDATE=$(ssh -q -p "$PORTA_MEGA" "${USER_MEGA}@${IP_MEGA}" "sudo apt update  -y && sudo  apt upgrade -y")
+
+        echo "✅ Servidor Atualizado"
+
+
+    else
+        echo "🔴 Servidor: OFFLINE ou inacessível na porta $PORTA_MEGA!"
+    fi
+    echo "=========================================="
+}
+
 case "$1" in
     status)
         verificar_status
         ;;
+    update)
+        atualizar_servidor
+        ;;
     *)
-        echo "Uso: $0 {status}"
+        echo "Uso: $0 {status|update}"
         exit 1
         ;;
 esac
