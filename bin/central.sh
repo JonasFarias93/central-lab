@@ -19,8 +19,13 @@ verificar_status() {
 
         # Conecta via SSH, roda o comando 'free -h', filtra a linha de Memória e exibe
         RAM=$(ssh -q -p "$PORTA_MEGA" "${USER_MEGA}@${IP_MEGA}" "free -h | awk 'NR==2 {print \$3 \" usados de \" \$2}'")
+
+        # Conecta via SSH, roda o comando 'idle', mostra CPU em uso
+        CPU=$(ssh -q -p "$PORTA_MEGA" "${USER_MEGA}@${IP_MEGA}" "idle=\$(vmstat 1 1 | tail -1 | awk '{print \$15}'); echo \$((100 - idle))")
+
         echo "💾 Armazenamento (Root): $DISCO"
         echo "🧠 Memória RAM: $RAM"
+        echo "⚙️ CPU em Uso: $CPU%"
 
     else
         echo "🔴 Servidor: OFFLINE ou inacessível na porta $PORTA_MEGA!"
