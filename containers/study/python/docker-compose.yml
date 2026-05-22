@@ -2,6 +2,6 @@ services:
   study-python:
     image: python:3.12
     volumes:
-      ~/containers/study/python/code:/code
+      - ~/containers/study/python/code:/code
     stdin_open: true
     tty: true
