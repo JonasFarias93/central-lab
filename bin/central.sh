@@ -26,10 +26,15 @@ verificar_status() {
         # Conecta via SSH, roda o comando 'ss', mostra quantidade de Conexoes Ativas
         CONEXAO=$(ssh -q -p "$PORTA_MEGA" "${USER_MEGA}@${IP_MEGA}" "total=\$(ss -tn state established | wc -l); echo \$((total - 1))")
 
+        # Conecta via SSH, roda o comando 'docker ps', mostra os containers ativos
+        CONTAINERS=$(ssh -q -p "$PORTA_MEGA" "${USER_MEGA}@${IP_MEGA}" "docker ps --format 'table {{.Names}}\t{{.Status}}'")
+
         echo "💾 Armazenamento (Root): $DISCO"
         echo "🧠 Memória RAM: $RAM"
         echo "⚙️ CPU em Uso: $CPU%"
         echo "🛜 Conexões Ativas: $CONEXAO"
+        echo "🐳 Containers Ativos:"
+        echo "$CONTAINERS" | tail -n +2 | sed 's/^/   /'
 
     else
         echo "🔴 Servidor: OFFLINE ou inacessível na porta $PORTA_MEGA!"
