@@ -38,14 +38,15 @@ case "$1" in
     project-link)
         project_link "$2" "$3"
     ;;
-
     service)
         case "$2" in
             start)   service_start "$3" "$4" ;;
             stop)    service_stop "$3" "$4" ;;
             restart) service_restart "$3" "$4" ;;
+            connect) service_connect "$3" ;;
+
             *)
-                echo "Uso: $0 service {start|stop|restart} <ambiente> <nome>"
+                echo "Uso: $0 service {start|stop|restart|connect} <ambiente> <nome>"
                 exit 1
                 ;;
         esac

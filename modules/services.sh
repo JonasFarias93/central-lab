@@ -58,3 +58,20 @@ service_restart(){
     echo "✅ Serviço Reiniciado com Sucesso!!"
 
 }
+
+service_connect(){
+    local NOME="$1"
+
+    echo "=========================================="
+    echo " [Central] Gerenciamento de Serviços: mega "
+    echo "=========================================="
+    echo "⏳ Conectando no Container: $NOME..."
+    
+    ssh -p "$PORTA_MEGA" "${USER_MEGA}@${IP_MEGA}" "docker ps --format '{{.Names}}' | grep -q '^$NOME$'" || {
+    echo "❌ Container não encontrado ou não está rodando: $NOME"
+    return 1
+}
+    ssh -t -p "$PORTA_MEGA" "${USER_MEGA}@${IP_MEGA}" "docker exec -it $NOME bash"
+
+    echo "✅ Conectado ao Container!!"
+}
