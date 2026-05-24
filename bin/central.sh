@@ -35,9 +35,20 @@ case "$1" in
     project-remove)
         project_remove "$2" "$3"
         ;;
+
+    service)
+        case "$2" in
+            start)   service_start "$3" "$4" ;;
+            stop)    service_stop "$3" "$4" ;;
+            restart) service_restart "$3" "$4" ;;
+            *)
+                echo "Uso: $0 service {start|stop|restart} <ambiente> <nome>"
+                exit 1
+                ;;
+        esac
+        ;;
     *)
     
-
         echo "Uso: $0 {status|update|update-server|update-containers|project-add|project-remove [ambiente] [nome]}"
         exit 1
         ;;
