@@ -29,10 +29,16 @@ case "$1" in
     backup)
         fazer_backup
         ;;
+    project-add)
+        project_add "$2" "$3" "$4"
+        ;;
+    project-remove)
+        project_remove "$2" "$3"
+        ;;
     *)
     
 
-        echo "Uso: $0 {status|update|update-server|update-containers}"
+        echo "Uso: $0 {status|update|update-server|update-containers|project-add|project-remove [ambiente] [nome]}"
         exit 1
         ;;
 esac
