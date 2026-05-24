@@ -47,21 +47,31 @@ atualizar_servidor() {
     echo "=========================================="
     echo " [Central] Atualização do Servidor: mega "
     echo "=========================================="
-
-    # Validação rápida de porta usando Netcat
-    if nc -z -w 2 "$IP_MEGA" "$PORTA_MEGA" > /dev/null 2>&1; then
-        echo "🟢 Servidor: ONLINE (Tempo de Resposta Rápido)"
-        echo "------------------------------------------"
-
-        UPDATE=$(ssh -q -p "$PORTA_MEGA" "${USER_MEGA}@${IP_MEGA}" "sudo apt update  -y && sudo  apt upgrade -y")
-
-        echo "✅ Servidor Atualizado"
+    echo "⏳ Atualizando..."
 
 
-    else
-        echo "🔴 Servidor: OFFLINE ou inacessível na porta $PORTA_MEGA!"
-    fi
+    UPDATE_SERVER=$(ssh -q -p "$PORTA_MEGA" "${USER_MEGA}@${IP_MEGA}" "DEBIAN_FRONTEND=noninteractive sudo apt update -qq 2>/dev/null && DEBIAN_FRONTEND=noninteractive sudo apt upgrade -qq -y 2>/dev/null")
+
+    echo "✅ Servidor Atualizado"
     echo "=========================================="
+
+}
+
+atualizar_containers() {
+    echo "=========================================="
+    echo " [Central] Atualização dos Containers: mega "
+    echo "=========================================="
+    echo "⏳ Atualizando..."
+
+    UPDATE_CONTAINERS=$(ssh -q -p "$PORTA_MEGA" "${USER_MEGA}@${IP_MEGA}" "docker images --format '{{.Repository}}:{{.Tag}}' | xargs -I {} docker pull {}")
+
+    echo "✅ Containers Atualizado"
+    echo "=========================================="
+}
+
+atualizar_tudo() {
+    atualizar_servidor
+    atualizar_containers
 }
 
 case "$1" in
@@ -69,10 +79,16 @@ case "$1" in
         verificar_status
         ;;
     update)
+        atualizar_tudo
+        ;;
+    update-server)
         atualizar_servidor
         ;;
+    update-containers)
+        atualizar_containers
+        ;;
     *)
-        echo "Uso: $0 {status|update}"
+        echo "Uso: $0 {status|update|update-server|update-containers}"
         exit 1
         ;;
 esac
