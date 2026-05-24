@@ -60,3 +60,20 @@ project_remove() {
     echo "✅ Projeto Removido com Sucesso!!"
 
 }
+
+project_link(){
+    LINK="$1"
+    local AMBIENTE="$2"
+    NOME=$(basename "$LINK" .git)
+
+    echo "=========================================="
+    echo " [Central] Link de Projetos: mega "
+    echo "=========================================="
+    echo "⏳ Clonando Repositorio em: ~/projects/$AMBIENTE/$NOME..."
+
+    ssh -p "$PORTA_MEGA" "${USER_MEGA}@${IP_MEGA}" "git clone $LINK ~/projects/$NOME"
+    ssh -p "$PORTA_MEGA" "${USER_MEGA}@${IP_MEGA}" "mkdir -p ~/containers/$AMBIENTE/$NOME && cp ~/projects/$NOME/docker-compose.yml ~/containers/$AMBIENTE/$NOME/"
+
+    echo "✅ Projeto Clonado com Sucesso!!"
+
+}

@@ -35,6 +35,9 @@ case "$1" in
     project-remove)
         project_remove "$2" "$3"
         ;;
+    project-link)
+        project_link "$2" "$3"
+    ;;
 
     service)
         case "$2" in
@@ -49,7 +52,7 @@ case "$1" in
         ;;
     *)
     
-        echo "Uso: $0 {status|update|update-server|update-containers|project-add|project-remove [ambiente] [nome]}"
+        echo "Uso: $0 {status|update|update-server|update-containers|project-add|project-link|project-remove [ambiente] [nome]}"
         exit 1
         ;;
 esac
