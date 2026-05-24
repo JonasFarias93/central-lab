@@ -16,7 +16,7 @@ service_start(){
     echo "=========================================="
     echo "⏳ Iniciando Container em: ~/containers/$AMBIENTE/$NOME..."
 
-    ssh -p "$PORTA_MEGA" "${USER_MEGA}@${IP_MEGA}" "cd ~/containers/$AMBIENTE/$NOME && docker compose start"
+    ssh -p "$PORTA_MEGA" "${USER_MEGA}@${IP_MEGA}" "cd ~/containers/$AMBIENTE/$NOME && docker compose up -d"
     echo "✅ Serviço Iniciado com Sucesso!!"
 
 }
