@@ -43,7 +43,15 @@ project_remove() {
         echo "❌ Erro: Informar [ambiente] e [nome]. Ex: $0 project-remove study python"
         return 1
     fi
-
+    
+    if [ "$AMBIENTE" = "prod" ]; then
+        echo "⚠️  Ambiente de produção! Digite 'CONFIRMAR' para continuar:"
+        read CONFIRMACAO
+        if [ "$CONFIRMACAO" != "CONFIRMAR" ]; then
+            echo "❌ Operação cancelada."
+            return 1
+        fi
+    fi
     echo "=========================================="
     echo " [Central] Remoção de Projetos: mega "
     echo "=========================================="

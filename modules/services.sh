@@ -30,6 +30,15 @@ service_stop(){
         return 1
     fi
 
+    if [ "$AMBIENTE" = "prod" ]; then
+        echo "⚠️  Ambiente de produção! Digite 'CONFIRMAR' para continuar:"
+        read CONFIRMACAO
+        if [ "$CONFIRMACAO" != "CONFIRMAR" ]; then
+            echo "❌ Operação cancelada."
+            return 1
+        fi
+    fi
+
     echo "=========================================="
     echo " [Central] Gerenciamento de Serviços: mega "
     echo "=========================================="
@@ -66,7 +75,7 @@ service_connect(){
     echo " [Central] Gerenciamento de Serviços: mega "
     echo "=========================================="
     echo "⏳ Conectando no Container: $NOME..."
-    
+
     ssh -p "$PORTA_MEGA" "${USER_MEGA}@${IP_MEGA}" "docker ps --format '{{.Names}}' | grep -q '^$NOME$'" || {
     echo "❌ Container não encontrado ou não está rodando: $NOME"
     return 1
