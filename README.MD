@@ -39,11 +39,27 @@ Script principal de monitoramento e automação do laboratório, executado via W
 ### Comandos disponíveis
 
 ```bash
-central status                # saúde geral do servidor
-central update                # atualiza servidor + containers
-central update-server         # atualiza apenas o Ubuntu
-central update-containers     # atualiza apenas imagens Docker
-central backup                # backup das configs críticas
+# Monitoramento
+central status                                   # saúde geral do servidor
+
+# Atualizações
+central update                                   # atualiza servidor + containers
+central update-server                            # atualiza apenas o Ubuntu
+central update-containers                        # atualiza apenas imagens Docker
+
+# Backup
+central backup                                   # backup das configs críticas
+
+# Gerenciamento de Projetos
+central project-add <ambiente> <nome> <imagem>   # cria novo projeto/container
+central project-remove <ambiente> <nome>         # remove projeto e container
+central project-link <url> <ambiente>            # clona repo Git existente
+
+# Gerenciamento de Serviços
+central service start <ambiente> <nome>          # inicia container
+central service stop <ambiente> <nome>           # para container
+central service restart <ambiente> <nome>        # reinicia container
+central service connect <container>              # acessa container interativamente
 ```
 
 ---
@@ -95,12 +111,54 @@ Compacta configs críticas do servidor e salva localmente no WSL.
 
 ---
 
+## 🐳 Gerenciamento de Projetos
+
+### Criar novo projeto
+
+```bash
+central project-add study python python:3.12
+central project-add dev api node:20
+```
+
+Cria a estrutura no servidor:
+
+```
+~/containers/<ambiente>/<nome>/
+└── docker-compose.yml
+```
+
+### Vincular projeto existente (Git)
+
+```bash
+central project-link https://github.com/user/repo.git dev
+```
+
+Clona o repo em `~/projects/<nome>/` e registra o ambiente em `~/containers/<ambiente>/<nome>/`.
+
+> ⚠️ O repositório deve conter um `docker-compose.yml` na raiz.
+
+### Remover projeto
+
+```bash
+central project-remove study python
+```
+
+> ⚠️ Operações no ambiente `prod` exigem confirmação digitando `CONFIRMAR`.
+
+### Acessar container
+
+```bash
+central service connect python-python-1
+```
+
+---
+
 ## 📁 Estrutura do Projeto
 
 ```
 central-lab/
 ├── bin/
-│   └── central.sh          # entry point
+│   └── central.sh          # entry point e roteamento
 ├── modules/
 │   ├── system.sh            # CPU, RAM, disco
 │   ├── network.sh           # conexões de rede
@@ -108,14 +166,23 @@ central-lab/
 │   ├── backup.sh            # rotinas de backup
 │   ├── update.sh            # rotinas de atualização
 │   └── projects.sh          # gerenciamento de projetos
-├── containers/
-│   └── study/
-│       └── python/
-│           └── docker-compose.yml
 ├── backups/                 # arquivos .tar.gz (ignorado pelo git)
 ├── .env                     # variáveis locais (ignorado pelo git)
 ├── .env.example             # template de configuração
 └── README.md
+```
+
+### Estrutura no Servidor
+
+```
+~/projects/                  # repositórios Git
+│   ├── central-lab/
+│   └── <seus-projetos>/
+│
+~/containers/                # ambientes Docker
+    ├── study/               # ambientes de estudo
+    ├── dev/                 # projetos em desenvolvimento
+    └── prod/                # serviços em produção (protegidos)
 ```
 
 ---
@@ -145,17 +212,14 @@ PORTA_MEGA="PORTA_SSH"
 USER_MEGA="USUARIO"
 ```
 
----
+### Exemplo de `~/.ssh/config`
 
-## 🐳 Containers
-
-### study-python
-
-Ambiente isolado para estudo de Python.
-
-```bash
-cd containers/study/python
-docker compose up -d
+```
+Host mega
+    HostName IP_DO_SERVIDOR
+    User USUARIO
+    Port 2222
+    IdentityFile ~/.ssh/id_ed25519
 ```
 
 ---
@@ -168,8 +232,8 @@ docker compose up -d
 | M4 | Comando `central status` completo | ✅ |
 | M5 | Automação de rotinas (update/backup) | ✅ |
 | M6 | Docker instalado e containers base | ✅ |
+| M8 | Gerenciamento de projetos via central | ✅ |
 | M7 | Cloudflare Tunnel | 🔒 aguarda domínio |
-| M8 | Gerenciamento de projetos via central | ⏳ |
 | M9 | Gerenciamento de energia dos containers | ⏳ |
 
 ---
