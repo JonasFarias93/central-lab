@@ -3,6 +3,7 @@
 Laboratório pessoal de infraestrutura, automação e segurança operacional baseado em Linux, WSL2 e Docker.
 
 ---
+![Logo do meu Projeto](/assets/img/central-lab.png)
 
 ## 🛡️ Infraestrutura Base (Concluído)
 
