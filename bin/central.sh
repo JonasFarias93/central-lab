@@ -11,6 +11,7 @@ source "$SCRIPT_DIR/../modules/services.sh"
 source "$SCRIPT_DIR/../modules/backup.sh"
 source "$SCRIPT_DIR/../modules/update.sh"
 source "$SCRIPT_DIR/../modules/projects.sh"
+source "$SCRIPT_DIR/../modules/status-web.sh"
 
 
 case "$1" in
@@ -51,6 +52,9 @@ case "$1" in
                 ;;
         esac
         ;;
+    status-web)
+        gerar_json
+    ;;
     *)
     
         echo "Uso: $0 {status|update|update-server|update-containers|project-add|project-link|project-remove [ambiente] [nome]}"

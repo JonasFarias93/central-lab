@@ -17,4 +17,6 @@ gerar_json() {
   "atualizado": "$(date '+%d/%m/%Y %H:%M:%S')"
 }
 EOF
+scp -q -P "$PORTA_MEGA" /tmp/status.json "${USER_MEGA}@${IP_MEGA}":~/status-web/status.json
+    rm /tmp/status.json
 }
