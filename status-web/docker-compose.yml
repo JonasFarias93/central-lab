@@ -1,0 +1,9 @@
+services:
+  status-web:
+    image: nginx:alpine
+    container_name: status-web
+    ports:
+      - "8081:80"
+    volumes:
+      - /home/jonas/status-web:/usr/share/nginx/html:ro
+    restart: unless-stopped

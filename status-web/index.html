@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Central Lab — Status</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0d0d0d;
+      color: #f0f0f0;
+      font-family: 'Courier New', monospace;
+      padding: 1.5rem;
+      min-height: 100vh;
+    }
+
+    .header {
+      border: 1px solid #ff6b00;
+      border-radius: 8px;
+      padding: 1rem 1.5rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-title {
+      font-size: 20px;
+      font-weight: bold;
+      color: #ff6b00;
+      letter-spacing: 2px;
+    }
+
+    .header-sub {
+      font-size: 12px;
+      color: #555;
+      margin-top: 4px;
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #22c55e;
+    }
+
+    .dot.offline { background: #ef4444; }
+
+    .status-text { color: #22c55e; }
+    .status-text.offline { color: #ef4444; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin-bottom: 1.5rem;
+    }
+
+    .card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 1rem;
+    }
+
+    .card-icon {
+      font-size: 22px;
+      margin-bottom: 8px;
+    }
+
+    .card-label {
+      font-size: 11px;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .card-value {
+      font-size: 20px;
+      font-weight: bold;
+      color: #ff6b00;
+    }
+
+    .card-sub {
+      font-size: 11px;
+      color: #444;
+      margin-top: 4px;
+    }
+
+    .section {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-size: 12px;
+      color: #ff6b00;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+
+    .container-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #222;
+    }
+
+    .container-row:last-child { border-bottom: none; }
+
+    .container-name { font-size: 13px; color: #f0f0f0; }
+
+    .container-status {
+      font-size: 11px;
+      color: #22c55e;
+      background: #0f2e1a;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    .empty {
+      font-size: 13px;
+      color: #444;
+      font-style: italic;
+    }
+
+    .footer {
+      font-size: 11px;
+      color: #333;
+      text-align: center;
+      margin-top: 1.5rem;
+    }
+
+    .updated {
+      font-size: 11px;
+      color: #444;
+      text-align: right;
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div>
+      <div class="header-title">[ CENTRAL LAB ]</div>
+      <div class="header-sub">status.jonasgfilho.com.br</div>
+    </div>
+    <div class="status-badge">
+      <div class="dot" id="dot"></div>
+      <span class="status-text" id="status-text">verificando...</span>
+    </div>
+  </div>
+
+  <div class="updated" id="updated">—</div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="card-icon">💾</div>
+      <div class="card-label">Armazenamento</div>
+      <div class="card-value" id="disco">—</div>
+      <div class="card-sub" id="disco-sub">livres</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">⚙️</div>
+      <div class="card-label">CPU</div>
+      <div class="card-value" id="cpu">—</div>
+      <div class="card-sub">em uso</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🧠</div>
+      <div class="card-label">Memória RAM</div>
+      <div class="card-value" id="ram">—</div>
+      <div class="card-sub">em uso</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🛜</div>
+      <div class="card-label">Conexões</div>
+      <div class="card-value" id="conexoes">—</div>
+      <div class="card-sub">TCP ativas</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🐳 containers ativos</div>
+    <div id="containers"><span class="empty">carregando...</span></div>
+  </div>
+
+  <div class="footer">central-lab · atualiza a cada 30s</div>
+
+  <script>
+    async function atualizar() {
+      try {
+        const res = await fetch('/status.json?t=' + Date.now());
+        const data = await res.json();
+
+        document.getElementById('dot').className = 'dot';
+        document.getElementById('status-text').textContent = 'mega — online';
+        document.getElementById('status-text').className = 'status-text';
+
+        document.getElementById('disco').textContent = data.disco.split(' ')[0];
+        document.getElementById('ram').textContent = data.ram.split(' ')[0];
+        document.getElementById('cpu').textContent = data.cpu;
+        document.getElementById('conexoes').textContent = data.conexoes;
+        document.getElementById('updated').textContent = 'atualizado: ' + data.atualizado;
+
+        const cont = document.getElementById('containers');
+        if (data.containers.length === 0) {
+          cont.innerHTML = '<span class="empty">nenhum container ativo</span>';
+        } else {
+          cont.innerHTML = data.containers.map(c =>
+            `<div class="container-row">
+              <span class="container-name">${c.nome}</span>
+              <span class="container-status">${c.status}</span>
+            </div>`
+          ).join('');
+        }
+
+      } catch (e) {
+        document.getElementById('dot').className = 'dot offline';
+        document.getElementById('status-text').textContent = 'mega — offline';
+        document.getElementById('status-text').className = 'status-text offline';
+      }
+    }
+
+    atualizar();
+    setInterval(atualizar, 30000);
+  </script>
+
+</body>
+</html>
